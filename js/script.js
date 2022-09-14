@@ -1,53 +1,104 @@
-const IVA = 1.22
-let seleccionado = 1
-let total = 0
+const Products = [
+    {
+        id: 1,
+        name: 'Monopatin XR3',
+        price: '700',
+        description: 'Monopatin XR3, con una gran estabilidad',
+        image: 'img/monopatin.webp',
+    },
+    {
+        id: 2,
+        name: 'MotoElectrica Pro',
+        price: '1500',
+        description: 'Moto electrica con una excelente autonomia',
+        image: 'img/motoelectrica.webp',
+    },
+    {
+        id: 3,
+        name: 'BiciElectrica XL PRO',
+        price: '1000',
+        description: 'BiciElectrica XL PRO para ir a donde quieras',
+        image: 'img/bicielectrica.webp',
+    },
+    {
+        id: 4, 
+        name: 'Monopatin XR',
+        price: '500',
+        description: 'Monopatin XR3, con una gran estabilidad',
+        image: 'img/monopatin2.webp',
+    },
+]
 
-class Producto {
-    constructor(nombre, precio, stock) {
-        this.nombre = nombre
-        this.precio = precio
-        this.stock = stock
+// Carrito array
+const cart = [];
+
+// Los productos se agregan al carrito
+const addToCart = (cart) => {
+    let containerCart = document.querySelector('#containerCart');
+    let container = document.querySelector('#cart');
+    if(container) {
+        container.parentNode.removeChild(container);
     }
-    precioConIva() {
-        return this.precio * IVA
-    }
-    descontarStock(unidades) {
-        return this.stock = this.stock - unidades
-    }
+    let div = document.createElement('div');
+    div.setAttribute('id', 'cart');
+    div.innerHTML += `<h2>Carrito</h2>`;
+    const total = cart.reduce((acc, prod) => acc + prod.price * prod.cantidad, 0)
+    cart.forEach(product => {
+        div.innerHTML += `
+            <div class="cartItem">
+                <h4 class="cartProd">Producto: ${product.name}</h4>
+                <h4 class="cartPrice">Precio: ${product.price}</h4>
+                <h4 class="cartCant">Cantidad: ${product.cantidad}</h4>
+            </div>`;
+    })
+    div.innerHTML += `
+    <h4 class="cartTotal">Total: ${total}</h4>`
+    containerCart.appendChild(div);
 }
 
-const carrito = []
-
-const producto1 = new Producto("Monopatin", 500, 50)
-const producto2 = new Producto("Moto", 1000, 35)
-const producto3 = new Producto("Bici", 300, 28)
-
-function agregarAlCarrito(seleccionado) {
-    switch(seleccionado) {
-        case 1:
-            carrito.push(producto1)
-            console.log("El producto sleccionado es " + producto1.nombre + " con un precio de: $ "+ producto1.precioConIva())
-            break;
-
-        case 2:
-            carrito.push(producto2)
-            console.log("El producto sleccionado es " + producto2.nombre + " con un precio de: $ "+ producto2.precioConIva())
-            break;
-        
-        case 3:
-            carrito.push(producto3)
-            console.log("El producto sleccionado es " + producto3.nombre + " con un precio de: $ "+ producto3.precioConIva())
-            break;
-    }
-
+// Se eligen los productos
+const loadEvents = () => {
+    let buttons = document.querySelectorAll('.button');
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            let prod = cart.find(product => product.id == button.id);
+            if (prod) {
+                prod.cantidad++;               
+            } else {
+                let prod = Products.find(product => product.id == button.id);
+                if(prod) {
+                    let newProduct = {
+                        id: prod.id,
+                        name: prod.name,
+                        price: prod.price,
+                        description: prod.description,
+                        image: prod.image,
+                        cantidad: 1
+                    }
+                    cart.push(newProduct);
+                }   
+            }
+            addToCart(cart);
+        });
+    });
 }
 
-while(seleccionado != 0){
-    seleccionado = parseInt(prompt("Cuales deseas comprar? \n 1-Monopatin \n 2-Moto \n 3-bici \n 0-Salir"));
-    agregarAlCarrito(seleccionado);
+// Se cargan los productos
+const loadProducts = (Products) => 
+{
+    let containerProd = document.querySelector('#containerProd');
+    Products.forEach(product => {
+        let div = document.createElement('div');
+        div.setAttribute('class', 'card');
+        div.innerHTML = `
+            <img src="${product.image}" alt="${product.description}">
+            <h3>US$${product.price}</h3>
+            <h4>${product.name}</h4>
+            <button class="button" id="${product.id}">Enviar al carrito</button>
+        `;
+        containerProd.appendChild(div);
+    })
+    loadEvents();
 }
 
-for (item of carrito){
-    total += item.precioConIva()
-}
-console.log(total)
+loadProducts(Products);
