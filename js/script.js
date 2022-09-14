@@ -1,34 +1,3 @@
-const Products = [
-    {
-        id: 1,
-        name: 'Monopatin XR3',
-        price: '700',
-        description: 'Monopatin XR3, con una gran estabilidad',
-        image: 'img/monopatin.webp',
-    },
-    {
-        id: 2,
-        name: 'MotoElectrica Pro',
-        price: '1500',
-        description: 'Moto electrica con una excelente autonomia',
-        image: 'img/motoelectrica.webp',
-    },
-    {
-        id: 3,
-        name: 'BiciElectrica XL PRO',
-        price: '1000',
-        description: 'BiciElectrica XL PRO para ir a donde quieras',
-        image: 'img/bicielectrica.webp',
-    },
-    {
-        id: 4, 
-        name: 'Monopatin XR',
-        price: '500',
-        description: 'Monopatin XR3, con una gran estabilidad',
-        image: 'img/monopatin2.webp',
-    },
-]
-
 // Carrito array
 const cart = [];
 
@@ -52,7 +21,7 @@ const addToCart = (cart) => {
             </div>`;
     })
     div.innerHTML += `
-    <h4 class="cartTotal">Total: ${total}</h4>`
+    <h4 class="cartTotal">Total: US$ ${total}</h4>`
     containerCart.appendChild(div);
 }
 
@@ -92,7 +61,7 @@ const loadProducts = (Products) =>
         div.setAttribute('class', 'card');
         div.innerHTML = `
             <img src="${product.image}" alt="${product.description}">
-            <h3>US$${product.price}</h3>
+            <h3>US$ ${product.price}</h3>
             <h4>${product.name}</h4>
             <button class="button" id="${product.id}">Enviar al carrito</button>
         `;
@@ -100,5 +69,4 @@ const loadProducts = (Products) =>
     })
     loadEvents();
 }
-
 loadProducts(Products);
