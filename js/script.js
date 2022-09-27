@@ -1,5 +1,13 @@
 // Carrito array
-const cart = [];
+let cart = [];
+
+// localstorage
+document.addEventListener('DOMContentLoaded', () => {
+    if(localStorage.getItem('cart')) {
+        cart = JSON.parse(localStorage.getItem('cart'))
+        addToCart(cart)
+    }
+})
 
 // Los productos se agregan al carrito
 const addToCart = (cart) => {
@@ -24,6 +32,7 @@ const addToCart = (cart) => {
     div.innerHTML += `
     <h4 class="cartTotal">Total: US$ ${total}</h4>`
     containerCart.appendChild(div);
+    
 }
 
 // Se eligen los productos
@@ -44,9 +53,11 @@ const loadEvents = () => {
                         cantidad: 1
                     }
                     cart.push(newProduct);
+                   
                 }   
             }
             addToCart(cart);
+            localStorage.setItem('cart', JSON.stringify(cart))
         });
     });
 }
