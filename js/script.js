@@ -4,10 +4,45 @@ let cart = [];
 // localstorage
 document.addEventListener('DOMContentLoaded', () => {
     if(localStorage.getItem('cart')) {
-        cart = JSON.parse(localStorage.getItem('cart'))
-        addToCart(cart)
+        cart = JSON.parse(localStorage.getItem('cart'));
+        addToCart(cart);
     }
-})
+});
+
+// alertas 
+
+const alert = () => {
+    let buttonBuy = document.querySelector('.buttonBuy')
+    buttonBuy.addEventListener('click', () => {
+        if(cart.length > 0) {
+            Swal.fire('La compra se ha realizado con exito!')
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Seleccione un producto',
+              });
+        }
+    });
+}
+
+// eliminar productos del carrito
+const eliminarProd = () => {
+    let buttonDelete = document.querySelectorAll('.buttonDelete')
+    buttonDelete.forEach(button => {
+        button.addEventListener('click', () => {
+            let prod = cart.find(product => product.id == button.id);
+            if(prod.cantidad > 1) {
+                prod.cantidad--;
+            } else {
+                let index = cart.findIndex(product => product.id == button.id);
+                cart.splice(index,1);
+            }
+            localStorage.setItem('cart', JSON.stringify(cart))
+            addToCart(cart)
+         });
+    });
+}
 
 // Los productos se agregan al carrito
 const addToCart = (cart) => {
@@ -27,12 +62,15 @@ const addToCart = (cart) => {
                 <h4 class="cartProd">Producto: ${product.name}</h4>
                 <h4 class="cartPrice">Precio: ${totalProd}</h4>
                 <h4 class="cartCant">Cantidad: ${product.cantidad}</h4>
+                <img class="buttonDelete" id="${product.id}" src="img/eliminar.png" alt="boton de borrar">
             </div>`;
     });
     div.innerHTML += `
-    <h4 class="cartTotal">Total: US$ ${total}</h4>`
-    containerCart.appendChild(div);
-    
+    <h4 class="cartTotal">Total: US$ ${total}</h4>
+    <button class="buttonBuy">REALIZAR COMPRA</button>`
+    containerCart.appendChild(div); 
+    eliminarProd();
+    alert();
 }
 
 // Se eligen los productos
@@ -53,18 +91,16 @@ const loadEvents = () => {
                         cantidad: 1
                     }
                     cart.push(newProduct);
-                   
                 }   
             }
             addToCart(cart);
-            localStorage.setItem('cart', JSON.stringify(cart))
+            localStorage.setItem('cart', JSON.stringify(cart));
         });
     });
 }
 
 // Se cargan los productos
-const loadProducts = (Products) => 
-{
+const loadProducts = (Products) => {
     let containerProd = document.querySelector('#containerProd');
     Products.forEach(product => {
         let div = document.createElement('div');
