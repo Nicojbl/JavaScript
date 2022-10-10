@@ -135,7 +135,7 @@ const loadProducts = (products) => {
 
 const getData = async () => {
     try {
-        const response = await fetch('../bdd/products.json');
+        const response = await fetch('https://nicojbl.github.io/JavaScript/bdd/products.json');
         const data = await response.json();
         loadProducts(data);
         products.push(...data);
