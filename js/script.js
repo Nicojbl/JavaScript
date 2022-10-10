@@ -1,4 +1,5 @@
 // Carrito array
+const products = [];
 let cart = [];
 
 // localstorage
@@ -12,10 +13,13 @@ document.addEventListener('DOMContentLoaded', () => {
 // alertas 
 
 const alert = () => {
-    let buttonBuy = document.querySelector('.buttonBuy')
+    let buttonBuy = document.querySelector('.buttonBuy');
     buttonBuy.addEventListener('click', () => {
         if(cart.length > 0) {
-            Swal.fire('La compra se ha realizado con exito!')
+            localStorage.removeItem('cart');
+            cart = [];
+            addToCart(cart);
+            Swal.fire('La compra se ha realizado con exito!');
         } else {
             Swal.fire({
                 icon: 'error',
@@ -26,9 +30,21 @@ const alert = () => {
     });
 }
 
+const alertToast = () => {
+    Swal.fire({
+        toast: true,
+        title: 'Se agrego un producto al carrito',
+        timer: 3000,
+        position: 'top',
+        showConfirmButton: false,
+        background: 'rgb(23, 219, 105)',
+        color: 'white',
+    })
+}
+
 // eliminar productos del carrito
 const eliminarProd = () => {
-    let buttonDelete = document.querySelectorAll('.buttonDelete')
+    let buttonDelete = document.querySelectorAll('.buttonDelete');
     buttonDelete.forEach(button => {
         button.addEventListener('click', () => {
             let prod = cart.find(product => product.id == button.id);
@@ -38,8 +54,8 @@ const eliminarProd = () => {
                 let index = cart.findIndex(product => product.id == button.id);
                 cart.splice(index,1);
             }
-            localStorage.setItem('cart', JSON.stringify(cart))
-            addToCart(cart)
+            localStorage.setItem('cart', JSON.stringify(cart));
+            addToCart(cart);
          });
     });
 }
@@ -79,10 +95,11 @@ const loadEvents = () => {
     buttons.forEach(button => {
         button.addEventListener('click', () => {
             let prod = cart.find(product => product.id == button.id);
+            alertToast();
             if (prod) {
                 prod.cantidad++;               
             } else {
-                let prod = Products.find(product => product.id == button.id);
+                let prod = products.find(product => product.id == button.id);
                 if(prod) {
                     let newProduct = {
                         id: prod.id,
@@ -100,9 +117,9 @@ const loadEvents = () => {
 }
 
 // Se cargan los productos
-const loadProducts = (Products) => {
+const loadProducts = (products) => {
     let containerProd = document.querySelector('#containerProd');
-    Products.forEach(product => {
+    products.forEach(product => {
         let div = document.createElement('div');
         div.setAttribute('class', 'card');
         div.innerHTML = `
@@ -115,4 +132,16 @@ const loadProducts = (Products) => {
     });
     loadEvents();
 }
-loadProducts(Products);
+
+const getData = async () => {
+    try {
+        const response = await fetch('../bdd/products.json');
+        const data = await response.json();
+        loadProducts(data);
+        products.push(...data);
+    } catch(error) {
+        console.error(error);
+    }
+}
+getData();
+
