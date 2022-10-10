@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // alertas 
-
 const alert = () => {
     let buttonBuy = document.querySelector('.buttonBuy');
     buttonBuy.addEventListener('click', () => {
@@ -133,9 +132,10 @@ const loadProducts = (products) => {
     loadEvents();
 }
 
+// fletch
 const getData = async () => {
     try {
-        const response = await fetch('https://nicojbl.github.io/JavaScript/bdd/products.json');
+        const response = await fetch('https://nicojbl.github.io/JavaScript/bdd/products.json'); // esta ruta es por que me tiraba error el pages de githab
         const data = await response.json();
         loadProducts(data);
         products.push(...data);
