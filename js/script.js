@@ -4,28 +4,29 @@ let cart = [];
 
 // localstorage
 document.addEventListener('DOMContentLoaded', () => {
-    if(localStorage.getItem('cart')) {
-        cart = JSON.parse(localStorage.getItem('cart'));
-        addToCart(cart);
-    }
+    localStorage.getItem('cart') && addToCart(JSON.parse(localStorage.getItem('cart')));
 });
 
-// alertas 
+// alertas
+const alertAprov = () => {
+    localStorage.removeItem('cart');
+    cart = [];
+    addToCart(cart);
+    Swal.fire('La compra se ha realizado con exito!');
+}
+
+const alertError = () => {
+    Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Seleccione un producto',
+      });
+}
+
 const alert = () => {
     let buttonBuy = document.querySelector('.buttonBuy');
     buttonBuy.addEventListener('click', () => {
-        if(cart.length > 0) {
-            localStorage.removeItem('cart');
-            cart = [];
-            addToCart(cart);
-            Swal.fire('La compra se ha realizado con exito!');
-        } else {
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Seleccione un producto',
-              });
-        }
+        (cart.length > 0) ? alertAprov() : alertError()
     });
 }
 
@@ -47,12 +48,7 @@ const eliminarProd = () => {
     buttonDelete.forEach(button => {
         button.addEventListener('click', () => {
             let prod = cart.find(product => product.id == button.id);
-            if(prod.cantidad > 1) {
-                prod.cantidad--;
-            } else {
-                let index = cart.findIndex(product => product.id == button.id);
-                cart.splice(index,1);
-            }
+            (prod.cantidad > 1) ? prod.cantidad-- : cart.splice(cart.findIndex(product => product.id == button.id),1);
             localStorage.setItem('cart', JSON.stringify(cart));
             addToCart(cart);
          });
@@ -63,9 +59,7 @@ const eliminarProd = () => {
 const addToCart = (cart) => {
     let containerCart = document.querySelector('#containerCart');
     let container = document.querySelector('#cart');
-    if(container) {
-        container.parentNode.removeChild(container);
-    }
+    container && container.parentNode.removeChild(container);
     let div = document.createElement('div');
     div.setAttribute('id', 'cart');
     div.innerHTML += `<h2>Carrito</h2>`;
@@ -83,32 +77,29 @@ const addToCart = (cart) => {
     div.innerHTML += `
     <h4 class="cartTotal">Total: US$ ${total}</h4>
     <button class="buttonBuy">REALIZAR COMPRA</button>`
-    containerCart.appendChild(div); 
+    containerCart.appendChild(div);
     eliminarProd();
     alert();
 }
 
 // Se eligen los productos
+const newProduct = (button) => {
+    let prod = products.find(product => product.id == button.id);
+    prod && cart.push({
+        id: prod.id,
+        name: prod.name,
+        price: prod.price,
+        cantidad: 1
+    });
+}
+
 const loadEvents = () => {
     let buttons = document.querySelectorAll('.button');
     buttons.forEach(button => {
         button.addEventListener('click', () => {
             let prod = cart.find(product => product.id == button.id);
             alertToast();
-            if (prod) {
-                prod.cantidad++;               
-            } else {
-                let prod = products.find(product => product.id == button.id);
-                if(prod) {
-                    let newProduct = {
-                        id: prod.id,
-                        name: prod.name,
-                        price: prod.price,
-                        cantidad: 1
-                    }
-                    cart.push(newProduct);
-                }   
-            }
+            (prod) ? prod.cantidad++ : newProduct(button);
             addToCart(cart);
             localStorage.setItem('cart', JSON.stringify(cart));
         });
